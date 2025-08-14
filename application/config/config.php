@@ -24,12 +24,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-if($_SERVER['SERVER_NAME'] === 'localhost'){
+/*if($_SERVER['SERVER_NAME'] === 'localhost'){
     $hypertext = 'http';
 }
 else{
     $hypertext = 'https';
+}*/
+
+if ($_SERVER['SERVER_NAME'] == 'localhost') {
+    $config['base_url'] = 'http://localhost/project_name/';
+} else {
+    $config['base_url'] = 'http://54.197.199.149/';
 }
+
 $config['base_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/';
 $config['api_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/general_api/';
 $config['file_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/master_images/';
