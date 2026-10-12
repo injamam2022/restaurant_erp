@@ -91,12 +91,9 @@
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <label>Date</label>
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="zmdi zmdi-calendar"></i></span>
-                                <div class="form-group">
-                                    <input type="text" class="form-control date-picker" id="order_only_date" placeholder="eg: 2019-10-25" value="<?php echo date('Y-m-d');?>">
-                                    <i class="form-group__bar"></i>
-                                </div>
+                            <div class="order-date-field">
+                                <i class="zmdi zmdi-calendar" aria-hidden="true"></i>
+                                <input type="text" class="form-control date-picker" id="order_only_date" placeholder="eg: 2019-10-25" value="<?php echo date('Y-m-d');?>">
                             </div>
                         </div>
                         <div class="col-12 col-sm-6 col-lg-3">

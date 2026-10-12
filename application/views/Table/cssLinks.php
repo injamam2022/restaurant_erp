@@ -338,18 +338,21 @@
             #table-modal .select2-container--default .select2-selection--single .select2-selection__arrow b {
                 display: none;
             }
-            #table-modal .input-group {
-                align-items: center;
-                width: 100%;
+            #table-modal .order-date-field {
+                position: relative;
             }
-            #table-modal .input-group .form-group {
-                flex: 1;
-                margin-bottom: 0;
-                width: 100%;
+            #table-modal .order-date-field .zmdi {
+                position: absolute;
+                left: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: rgba(255,255,255,0.7);
+                font-size: 18px;
+                pointer-events: none;
+                z-index: 1;
             }
-            #table-modal .input-group-addon {
-                color: #fff;
-                padding-right: 8px;
+            #table-modal .order-date-field .form-control {
+                padding-left: 38px;
             }
             #table-modal .order-table-wrap {
                 width: 100%;
