@@ -38,6 +38,7 @@
                     $this->load->view('Table/food_items',$data['foodData']);
                     $this->load->view('Table/drink_items',$data['foodData']);
             ?>
+            <center id="loader-modal" style="display:none;"><img src="https://cdn.pixabay.com/animation/2023/11/09/03/05/03-05-45-320_512.gif" style="width: 30%;"></center>
             <div class="collapse" id="comments">
                 <div class="card card-body">
                     <div class="row" style="font-weight: bold;">

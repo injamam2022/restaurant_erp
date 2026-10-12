@@ -209,9 +209,9 @@ function downloadCsv() {
             res.all_list[i]?.order_only_date,
             res.all_list[i]?.food_cash_total,
             res.all_list[i]?.food_card_total,
+            parseFloat(res.all_list[i]?.food_upi_total) - ( parseFloat(res.all_list[i]?.food_zomato_total) + parseFloat(res.all_list[i]?.food_swiggy_total)),
             res.all_list[i]?.food_zomato_total,
             res.all_list[i]?.food_swiggy_total,
-            res.all_list[i]?.food_upi_total,
             (parseFloat(res.all_list[i]?.food_cash_total) + parseFloat(res.all_list[i]?.food_card_total) + parseFloat(res.all_list[i]?.food_zomato_total) + parseFloat(res.all_list[i]?.food_swiggy_total)+parseFloat(res.all_list[i]?.food_upi_total)),
             res.all_list[i]?.drinks_cash_total,
             res.all_list[i]?.drinks_card_total,
@@ -220,16 +220,12 @@ function downloadCsv() {
             res.all_list[i]?.total_cash_sale,
             res.all_list[i]?.total_card_sale,
             res.all_list[i]?.total_upi_sale,
-            res.all_list[i]?.total_sale,
-            (res.all_list[i]?.total_sale_gst/2).toFixed(2),
-            (res.all_list[i]?.total_sale_gst/2).toFixed(2),
-            res.all_list[i]?.total_sale_gst,
             res.all_list[i]?.total_discount,
-            res.all_list[i]?.net_total_sale
+            res.all_list[i]?.total_sale
           ];
         }
-        let header = [['DATE', 'FOOD(CASH)','FOOD(CB)','ZOMATO','SWIGGY','FOOD(UPI)','FOOD(TOTAL)','DRINK(CASH)','DRINK(CB)','DRINK(UPI)','DRINK(TOTAL)',
-          'CASH(TOTAL)','CB(TOTAL)','UPI(TOTAL)','TOTAL SALE','TOTAL CGST','TOTAL SGST','TOTAL GST','TOTAL DISCOUNT','NET SALE']];
+        let header = [['DATE', 'FOOD(CASH)','FOOD(CB)','FOOD(UPI)','ZOMATO','SWIGGY','FOOD(TOTAL)','DRINK(CASH)','DRINK(CB)','DRINK(UPI)','DRINK(TOTAL)',
+          'CASH(TOTAL)','CB(TOTAL)','UPI(TOTAL)','TOTAL DISCOUNT','TOTAL SALE']];
           let rows = data ;
         rows = [...header,...rows];
         let csvContent = "data:text/csv;charset=utf-8,";

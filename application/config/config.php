@@ -30,9 +30,10 @@ if($_SERVER['SERVER_NAME'] === 'localhost'){
 else{
     $hypertext = 'https';
 }
-$config['base_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/';
-$config['api_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/general_api/';
-$config['file_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/master_images/';
+
+$config['base_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/restaurant_erp';
+$config['api_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/restaurant_erp/general_api/';
+$config['file_url'] = ''.$hypertext.'://'.$_SERVER['SERVER_NAME'].'/restaurant_erp/master_images/';
 $config['company_name'] = 'PALKI RESTOBAR';
 
 $config['api_key'] = 'c2FudGFudV9wYXVsX2luZmltb25r';

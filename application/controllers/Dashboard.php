@@ -24,6 +24,8 @@ class Dashboard extends CI_Controller {
         $api_url = $this->config->item('api_url');
         $get_api_url = $api_url."General/Get";
 		$get_dashboard_info = $api_url."General/GetTransactionInformation";
+
+		
         
         $objarray = array("role"=>array("del_status"=>0));
         
@@ -35,6 +37,7 @@ class Dashboard extends CI_Controller {
         $response = $this->General_model->general_function($objarray,$get_dashboard_info);
         $data['roleDashboardInfo']=json_decode($response,true);
         
+		//print_r($data['roleDashboardInfo']); die();
        
         
 		$this->load->view('Dashboard/cssLinks');

@@ -75,6 +75,7 @@ $query_builder = TRUE;
 //arnab94
 //Arnabnath@95  
 
+
 if($_SERVER['SERVER_NAME']=='localhost')
 {
     $username='root';
@@ -83,10 +84,12 @@ if($_SERVER['SERVER_NAME']=='localhost')
 }
 else
 {
-   $username='u677776351_live_res_db';
-   $password='Decode@2024'; 
-   $database_name = "u677776351_live_res_db";
+   $username='root';
+   $password='Developer@2025'; 
+   $database_name = "palki_db";
 }
+
+
 
 
 

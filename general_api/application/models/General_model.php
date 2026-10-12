@@ -725,128 +725,253 @@ class General_model extends CI_Model
         return $result;
      }
 
-    public function TableGet_data($data){
-        ////// Order Query /// 
-        $query=$this->db->where("order_master.table_id",$data['table_id']);
-        $query=$this->db->where("table_status",'deactive');
-        $query=$this->db->where("status_id",'1');
-        $query=$this->db->join('table_master', 'order_master.table_id = table_master.table_id', 'left');
-        $query=$this->db->get('order_master');
-        $order_data = $query->result_array();
-        //echo $this->db->last_query(); die;
+    // public function TableGet_data($data){
+    //     ////// Order Query /// 
+    //     $query=$this->db->where("order_master.table_id",$data['table_id']);
+    //     $query=$this->db->where("table_status",'deactive');
+    //     $query=$this->db->where("status_id",'1');
+    //     $query=$this->db->join('table_master', 'order_master.table_id = table_master.table_id', 'left');
+    //     $query=$this->db->get('order_master');
+    //     $order_data = $query->result_array();
+    //     //echo $this->db->last_query(); die;
 
-        if($order_data){
-            $order_collection_data = [];
-            $food_total=0;
-            $food_total_with_gst=0;
-            $drinks_total=0;
-            $drinks_sub_total=0;
-            $food_gst=0;
-            $food_discount=0;
-            $drinks_discount=0;
-            $discount=0;
-            $grand_total=0;
-            $query=$this->db->where("order_id",$order_data[0]['order_id']);
-            $query=$this->db->join('food_master', 'food_master.food_id = order_details_master.food_id', 'left');
-            $query=$this->db->get("order_details_master");
-            $order_sub_data = $query->result_array();
+    //     if($order_data){
+    //         $order_collection_data = [];
+    //         $food_total=0;
+    //         $food_total_with_gst=0;
+    //         $drinks_total=0;
+    //         $drinks_sub_total=0;
+    //         $food_gst=0;
+    //         $food_discount=0;
+    //         $drinks_discount=0;
+    //         $discount=0;
+    //         $grand_total=0;
+    //         $query=$this->db->where("order_id",$order_data[0]['order_id']);
+    //         $query=$this->db->join('food_master', 'food_master.food_id = order_details_master.food_id', 'left');
+    //         $query=$this->db->get("order_details_master");
+    //         $order_sub_data = $query->result_array();
         
-            for($i=0;$i<count($order_sub_data);$i++){
-                if($order_sub_data[$i]['category_id'] == 2){
-                    $drinks_sub_total+=$order_sub_data[$i]['sub_total'];
-                }else{
-                    $query=$this->db->get('gst_master');
-                    $gst_data = $query->result_array();
+    //         for($i=0;$i<count($order_sub_data);$i++){
+    //             if($order_sub_data[$i]['category_id'] == 2){
+    //                 $drinks_sub_total+=$order_sub_data[$i]['sub_total'];
+    //             }else{
+    //                 $query=$this->db->get('gst_master');
+    //                 $gst_data = $query->result_array();
 
-                    $food_total+=$order_sub_data[$i]['sub_total'];
-                    $food_total_with_gst+=$order_sub_data[$i]['sub_total'] + $order_sub_data[$i]['sub_total'] * ($gst_data[0]['igst']/100);
-                    $food_gst+=($order_sub_data[$i]['sub_total'] * ($gst_data[0]['igst']/100));
-                }
+    //                 $food_total+=$order_sub_data[$i]['sub_total'];
+    //                 $food_total_with_gst+=$order_sub_data[$i]['sub_total'] + $order_sub_data[$i]['sub_total'] * ($gst_data[0]['igst']/100);
+    //                 $food_gst+=($order_sub_data[$i]['sub_total'] * ($gst_data[0]['igst']/100));
+    //             }
                 
-            }
-            if($order_data[0]['discount_percentage'] != 0){
-                $food_discount = (($food_total * $order_data[0]['discount_percentage'])/100);
-            }
-            if($order_data[0]['discount_percentage_drink'] != 0){
-                $drinks_discount = (($drinks_sub_total * $order_data[0]['discount_percentage_drink'])/100);
-            }
-            $discount = $food_discount + $drinks_discount;
-            $drinks_total = $drinks_sub_total;
-            $food_total_with_gst = $food_total - $food_discount + $food_gst;
-            $grand_total = ($food_total_with_gst + ($drinks_total-$drinks_discount)) ;
+    //         }
+    //         if($order_data[0]['discount_percentage'] != 0){
+    //             $food_discount = (($food_total * $order_data[0]['discount_percentage'])/100);
+    //         }
+    //         if($order_data[0]['discount_percentage_drink'] != 0){
+    //             $drinks_discount = (($drinks_sub_total * $order_data[0]['discount_percentage_drink'])/100);
+    //         }
+    //         $discount = $food_discount + $drinks_discount;
+    //         $drinks_total = $drinks_sub_total;
+    //         $food_total_with_gst = $food_total - $food_discount + $food_gst;
+    //         $grand_total = ($food_total_with_gst + ($drinks_total-$drinks_discount)) ;
 
-            $this->db->where('order_id', $order_data[0]['order_id']);
-            $this->db->update('order_master',array(
-                "food_total" => $food_total,
-                "food_total_with_gst" =>($food_total_with_gst),
-                "drinks_total" => $drinks_total,
-                "food_gst" => $food_gst,
-                "discount" => $discount,
-                "grand_total" => round($grand_total),
-            ));
+    //         $this->db->where('order_id', $order_data[0]['order_id']);
+    //         $this->db->update('order_master',array(
+    //             "food_total" => $food_total,
+    //             "food_total_with_gst" =>($food_total_with_gst),
+    //             "drinks_total" => $drinks_total,
+    //             "food_gst" => $food_gst,
+    //             "discount" => $discount,
+    //             "grand_total" => round($grand_total),
+    //         ));
             
-        }else{
-            $order_collection_data = [];
-            $food_total=0;
-            $food_total_with_gst=0;
-            $drinks_total=0;
-            $drinks_sub_total=0;
-            $food_gst=0;
-            $discount=0;
-            $grand_total=0;
-            $sql = "SELECT MAX(order_id) as order_id FROM order_master";
-            $query = $this->db->query($sql);
-            $res = $query->result_array();
-            $numbers = $this->generate_numbers($res[0]['order_id'] + 1, 20, 10);
-            if (date('m') <= 3) {//Upto June 2014-2015
-                $financial_year = (date('Y')-1) . '-' . date('Y');
-            } else {//After June 2015-2016
-                $financial_year = date('Y') . '-' . (date('Y') + 1);
+    //     }else{
+    //         $order_collection_data = [];
+    //         $food_total=0;
+    //         $food_total_with_gst=0;
+    //         $drinks_total=0;
+    //         $drinks_sub_total=0;
+    //         $food_gst=0;
+    //         $discount=0;
+    //         $grand_total=0;
+    //         $sql = "SELECT MAX(order_id) as order_id FROM order_master";
+    //         $query = $this->db->query($sql);
+    //         $res = $query->result_array();
+    //         $numbers = $this->generate_numbers($res[0]['order_id'] + 1, 20, 10);
+    //         if (date('m') <= 3) {//Upto June 2014-2015
+    //             $financial_year = (date('Y')-1) . '-' . date('Y');
+    //         } else {//After June 2015-2016
+    //             $financial_year = date('Y') . '-' . (date('Y') + 1);
+    //         }
+    //         $invoic_number="PAL-".$numbers[0]."-".$financial_year;
+
+    //         $order_insert_data = array(
+    //             "bill_invoice_number " => $invoic_number,
+    //             "table_id"=>$data['table_id'],
+    //             "food_total" => $food_total,
+    //             "food_total_with_gst" => $food_total_with_gst,
+    //             "drinks_total" => $drinks_total,
+    //             "food_gst" => $food_gst,
+    //             "discount" => $discount,
+    //             "grand_total" => round($grand_total),
+    //         );
+    //         $this->db->insert('order_master',$order_insert_data);
+    //         $order_id=$this->db->insert_id();
+
+    //         $this->db->where('table_id', $data['table_id']);
+    //         $this->db->update('table_master',array("table_status"=>"deactive"));
+
+    //         $query=$this->db->where("order_id",$order_id);
+    //         $query=$this->db->get('order_master');
+    //         $order_data = $query->result_array();
+    //         $order_sub_data = [];
+    //     }
+
+    //     if($order_data[0]['payment_id'] == 7 ){
+    //        $query = $this->db->where('order_id',$order_data[0]['order_id']);
+    //        $query = $this->db->get('order_collection_master');
+    //        $order_collection_data = $query->result_array();
+    //     }   
+
+    //     return array(
+    //         "food_total" => $food_total,
+    //         "food_total_with_gst" => $food_total_with_gst,
+    //         "drinks_total" => $drinks_total - $drinks_discount,
+    //         "drinks_sub_total" => $drinks_sub_total,
+    //         "food_gst" => $food_gst,
+    //         "discount" => $discount,
+    //         "grand_total" => round($grand_total),
+    //         "order_data" => $order_data,
+    //         "order_sub_data" => $order_sub_data,
+    //         "order_collection_data"=>$order_collection_data
+
+    //     );
+    // }
+
+    public function TableGet_data($data) {
+    // 1. Fetch Active Table Order Data
+    $this->db->where("order_master.table_id", $data['table_id']);
+    $this->db->where("table_status", 'deactive');
+    $this->db->where("status_id", '1');
+    $this->db->join('table_master', 'order_master.table_id = table_master.table_id', 'left');
+    $query = $this->db->get('order_master');
+    $order_data = $query->result_array();
+
+    // Default variable structures
+    $order_collection_data = [];
+    $food_total = 0;
+    $drinks_sub_total = 0;
+    $food_gst = 0;
+    $food_discount = 0;
+    $drinks_discount = 0;
+    $order_sub_data = [];
+
+    if ($order_data) {
+        // Fetch items tied to the active order
+        $this->db->where("order_id", $order_data[0]['order_id']);
+        $this->db->join('food_master', 'food_master.food_id = order_details_master.food_id', 'left');
+        $query = $this->db->get("order_details_master");
+        $order_sub_data = $query->result_array();
+        
+        // OPTIMIZATION: Pull GST configuration once outside the loop
+        $gst_query = $this->db->get('gst_master');
+        $gst_data = $gst_query->result_array();
+        $gst_rate = isset($gst_data[0]['igst']) ? floatval($gst_data[0]['igst']) : 5.0; // fallback default
+
+        // Calculate basic item subtotals
+        for ($i = 0; $i < count($order_sub_data); $i++) {
+            if ($order_sub_data[$i]['category_id'] == 2) {
+                $drinks_sub_total += $order_sub_data[$i]['sub_total'];
+            } else {
+                $food_total += $order_sub_data[$i]['sub_total'];
             }
-            $invoic_number="PAL-".$numbers[0]."-".$financial_year;
-
-            $order_insert_data = array(
-                "bill_invoice_number " => $invoic_number,
-                "table_id"=>$data['table_id'],
-                "food_total" => $food_total,
-                "food_total_with_gst" => $food_total_with_gst,
-                "drinks_total" => $drinks_total,
-                "food_gst" => $food_gst,
-                "discount" => $discount,
-                "grand_total" => round($grand_total),
-            );
-            $this->db->insert('order_master',$order_insert_data);
-            $order_id=$this->db->insert_id();
-
-            $this->db->where('table_id', $data['table_id']);
-            $this->db->update('table_master',array("table_status"=>"deactive"));
-
-            $query=$this->db->where("order_id",$order_id);
-            $query=$this->db->get('order_master');
-            $order_data = $query->result_array();
-            $order_sub_data = [];
         }
 
-        if($order_data[0]['payment_id'] == 7 ){
-           $query = $this->db->where('order_id',$order_data[0]['order_id']);
-           $query = $this->db->get('order_collection_master');
-           $order_collection_data = $query->result_array();
-        }   
+        // Apply dynamic discounts cleanly
+        if ($order_data[0]['discount_percentage'] != 0) {
+            $food_discount = ($food_total * $order_data[0]['discount_percentage']) / 100;
+        }
+        if ($order_data[0]['discount_percentage_drink'] != 0) {
+            $drinks_discount = ($drinks_sub_total * $order_data[0]['discount_percentage_drink']) / 100;
+        }
 
-        return array(
-            "food_total" => $food_total,
-            "food_total_with_gst" => $food_total_with_gst,
-            "drinks_total" => $drinks_total - $drinks_discount,
-            "drinks_sub_total" => $drinks_sub_total,
-            "food_gst" => $food_gst,
-            "discount" => $discount,
-            "grand_total" => round($grand_total),
-            "order_data" => $order_data,
-            "order_sub_data" => $order_sub_data,
-            "order_collection_data"=>$order_collection_data
+        // CORRECT INDIAN RESTAURANT GST ORDER OF OPERATIONS:
+        // Food subtotal minus promotional discount = taxable value
+        $taxable_food_amount = $food_total - $food_discount;
+        $food_gst = $taxable_food_amount * ($gst_rate / 100);
+        
+        // Finalize values
+        $food_total_with_gst = $taxable_food_amount + $food_gst;
+        $drinks_total = $drinks_sub_total - $drinks_discount;
+        $grand_total = $food_total_with_gst + $drinks_total;
+        $discount = $food_discount + $drinks_discount;
 
+        // Push clean metrics back to order record
+        $this->db->where('order_id', $order_data[0]['order_id']);
+        $this->db->update('order_master', array(
+            "food_total"          => $food_total,
+            "food_total_with_gst" => $food_total_with_gst, // keeps floating decimals safe for historical logs
+            "drinks_total"        => $drinks_sub_total,   // original un-discounted drinks total
+            "food_gst"            => $food_gst,
+            "discount"            => $discount,
+            "grand_total"         => round($grand_total), // matched rounded integer saved
+        ));
+        
+    } else {
+        // Handle creating a fresh order if none exists yet
+        $sql = "SELECT MAX(order_id) as order_id FROM order_master";
+        $query = $this->db->query($sql);
+        $res = $query->result_array();
+        $numbers = $this->generate_numbers($res[0]['order_id'] + 1, 20, 10);
+        
+        $financial_year = (date('m') <= 3) ? (date('Y')-1) . '-' . date('Y') : date('Y') . '-' . (date('Y') + 1);
+        $invoic_number = "PAL-" . $numbers[0] . "-" . $financial_year;
+
+        $order_insert_data = array(
+            "bill_invoice_number " => $invoic_number,
+            "table_id"             => $data['table_id'],
+            "food_total"           => 0,
+            "food_total_with_gst"  => 0,
+            "drinks_total"         => 0,
+            "food_gst"             => 0,
+            "discount"             => 0,
+            "grand_total"          => 0,
         );
+        $this->db->insert('order_master', $order_insert_data);
+        $order_id = $this->db->insert_id();
+
+        $this->db->where('table_id', $data['table_id']);
+        $this->db->update('table_master', array("table_status" => "deactive"));
+
+        $this->db->where("order_id", $order_id);
+        $query = $this->db->get('order_master');
+        $order_data = $query->result_array();
+        
+        $food_total_with_gst = 0;
+        $drinks_total = 0;
     }
+
+    // Handle payment-specific context collections
+    if ($order_data[0]['payment_id'] == 7) {
+       $this->db->where('order_id', $order_data[0]['order_id']);
+       $query = $this->db->get('order_collection_master');
+       $order_collection_data = $query->result_array();
+    }   
+
+    // Unified format returned directly to invoice view layouts
+    return array(
+        "food_total"            => $food_total,
+        "food_total_with_gst"   => $food_total_with_gst,
+        "drinks_total"          => $drinks_total, 
+        "drinks_sub_total"      => $drinks_sub_total,
+        "food_gst"              => $food_gst,
+        "discount"              => $discount,
+        "grand_total"           => round($grand_total),
+        "order_data"            => $order_data,
+        "order_sub_data"        => $order_sub_data,
+        "order_collection_data" => $order_collection_data
+    );
+}
 
     public function FinalSubmitOrder_data($data){
         $splitPayment = $data['splitPayment'];
@@ -1374,16 +1499,16 @@ class General_model extends CI_Model
     public function GetAllSaleReport_data($data){
         $sql = 
 "SELECT order_master.order_only_date, 
-SUM(CASE WHEN order_master.payment_id = 1 AND order_master.order_comments != 'zomato' AND (order_comments NOT LIKE 'sw%' OR order_comments NOT LIKE '%GY') THEN (order_master.food_total) ELSE 0 END) AS food_cash_total,
+SUM(CASE WHEN order_master.payment_id = 1 AND order_master.order_comments != 'zomato' AND (order_comments NOT LIKE 'sw%' OR order_comments NOT LIKE '%GY') THEN (order_master.food_total_with_gst) ELSE 0 END) AS food_cash_total,
 
-SUM(CASE WHEN (order_master.payment_id = 2 OR order_master.payment_id = 3) AND order_master.order_comments != 'zomato' AND (order_comments NOT LIKE 'sw%' OR order_comments NOT LIKE '%GY')  THEN (order_master.food_total) ELSE 0 END) AS food_card_total,
+SUM(CASE WHEN (order_master.payment_id = 2 OR order_master.payment_id = 3) AND order_master.order_comments != 'zomato' AND (order_comments NOT LIKE 'sw%' OR order_comments NOT LIKE '%GY')  THEN (order_master.food_total_with_gst) ELSE 0 END) AS food_card_total,
 
-SUM(CASE WHEN (order_master.payment_id = 4 OR order_master.payment_id = 5 OR order_master.payment_id = 6) AND order_master.order_comments != 'zomato' AND (order_comments NOT LIKE 'sw%' OR order_comments NOT LIKE '%GY')  THEN (order_master.food_total) ELSE 0 END) AS food_upi_total,
+SUM(CASE WHEN (order_master.payment_id = 4 OR order_master.payment_id = 5 OR order_master.payment_id = 6) AND order_master.order_comments != 'zomato' AND (order_comments NOT LIKE 'sw%' OR order_comments NOT LIKE '%GY')  THEN (order_master.food_total_with_gst) ELSE 0 END) AS food_upi_total,
 
-SUM(CASE WHEN order_master.order_comments = 'zomato'  THEN (order_master.food_total) ELSE 0 END) AS food_zomato_total,
-SUM(CASE WHEN order_comments LIKE 'sw%' OR order_comments LIKE '%GY'  THEN (order_master.food_total) ELSE 0 END) AS food_swiggy_total,
+SUM(CASE WHEN order_master.order_comments = 'zomato'  THEN (order_master.food_total_with_gst) ELSE 0 END) AS food_zomato_total,
+SUM(CASE WHEN order_comments LIKE 'sw%' OR order_comments LIKE '%GY'  THEN (order_master.food_total_with_gst) ELSE 0 END) AS food_swiggy_total,
 
-SUM(order_master.food_total) AS total_food_with_out_gst,
+SUM(order_master.food_total_with_gst) AS total_food_with_out_gst,
 
 SUM(CASE WHEN order_master.payment_id = 1 THEN (order_master.drinks_total) ELSE 0 END) AS drinks_cash_total,
 
@@ -1393,28 +1518,46 @@ SUM(CASE WHEN order_master.payment_id = 4 OR order_master.payment_id = 5 OR orde
 
 SUM(order_master.drinks_total) AS total_drinks ,
 
-SUM(CASE WHEN order_master.payment_id = 1 THEN order_master.food_total + order_master.drinks_total ELSE 0 END) AS total_cash_sale,
+(SUM(CASE WHEN order_master.payment_id = 1 THEN order_master.grand_total  ELSE 0 END)) AS total_cash_sale,
 
-SUM(CASE WHEN order_master.payment_id = 2 OR order_master.payment_id = 3 THEN order_master.food_total + order_master.drinks_total ELSE 0 END) AS total_card_sale,
+(SUM(CASE WHEN order_master.payment_id = 2 OR order_master.payment_id = 3 THEN order_master.grand_total  ELSE 0 END)) AS total_card_sale,
 
-SUM(CASE WHEN order_master.payment_id = 4 OR order_master.payment_id = 5 OR order_master.payment_id = 6 THEN order_master.food_total + order_master.drinks_total ELSE 0 END) AS total_upi_sale,
+(SUM(CASE WHEN order_master.payment_id = 4 OR order_master.payment_id = 5 OR order_master.payment_id = 6 THEN order_master.grand_total  ELSE 0 END)) AS total_upi_sale,
 
-SUM(order_master.food_total + order_master.drinks_total) AS total_sale ,
-
-SUM(order_master.food_gst) AS total_sale_gst,
+SUM(order_master.grand_total) AS total_sale ,
 
 SUM(order_master.discount) AS total_discount ,
 
-SUM((order_master.food_total + order_master.drinks_total) - (order_master.food_gst +order_master.discount)) AS net_total_sale 
+SUM(order_master.grand_total - order_master.discount) AS net_total_sale 
 
 FROM order_master WHERE order_master.status_id = 2 AND order_only_date BETWEEN '".$data['fliter_with_date_from']."' AND '".$data['fliter_with_date_to']."' GROUP BY order_master.order_only_date;";
         //return  $sql;die;
         $query = $this->db->query($sql);
         $res = $query->result_array();
+
+        $sql2="SELECT created_by, (SUM(CASE WHEN order_collection_master.payment_id = 1 THEN order_collection_master.collection_amount  ELSE 0 END)) AS total_cash_partial_sale,
+        (SUM(CASE WHEN order_collection_master.payment_id = 2 OR order_collection_master.payment_id = 2 THEN order_collection_master.collection_amount  ELSE 0 END)) AS total_card_partial_sale,
+        (SUM(CASE WHEN order_collection_master.payment_id = 4 OR order_collection_master.payment_id = 5 OR order_collection_master.payment_id = 6 THEN order_collection_master.collection_amount  ELSE 0 END)) AS total_upi_partial_sale
+        FROM order_collection_master WHERE created_by BETWEEN '".$data['fliter_with_date_from']."' AND '".$data['fliter_with_date_to']."' GROUP BY created_by";
+        //return print_r($sql2);die;
+        
+        $query = $this->db->query($sql2);
+        $partial_list = $query->result_array();
+
+        for($i=0;$i<count($res);$i++){
+            for($j=0;$j<count($partial_list);$j++){
+                if($res[$i]['order_only_date'] == $partial_list[$j]['created_by']){
+                    $res[$i]['total_cash_sale'] = $res[$i]['total_cash_sale']+$partial_list[$j]['total_cash_partial_sale'];
+                    $res[$i]['total_card_sale'] = $res[$i]['total_card_sale']+$partial_list[$j]['total_card_partial_sale'];
+                    $res[$i]['total_upi_sale'] = $res[$i]['total_upi_sale']+$partial_list[$j]['total_upi_partial_sale'];
+                }
+            }
+        }
+        
         if(count($res)>0){
-            return array("stat" => 200, "msg" => "Success","all_list"=>$res);
+            return array("stat" => 200, "msg" => "Success","all_list"=>$res,"partial_list"=>$partial_list);
         }else{
-            return array("stat" => 400, "msg" => "No data","all_list"=>$res);
+            return array("stat" => 400, "msg" => "No data","all_list"=>$res,"partial_list"=>$partial_list);
         }
     }
 }

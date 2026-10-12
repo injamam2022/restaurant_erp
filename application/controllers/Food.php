@@ -199,8 +199,8 @@ class Food extends CI_Controller {
             $edit_food_picture = $glob_image;
         }
         
-        $edit_food_arr = array("food"=>array("food_name"=>$food_name,"food_description"=>$food_description,"category_id"=>$food_category,"sub_category_id"=>$editfoodSubCategory,"food_price"=>$food_price,"food_image"=>$edit_food_picture,"food_item_code"=>$food_item_code),"where"=>array("food_id"=>$food_id),"check"=>"food_name");
-        //echo json_encode($edit_food_arr); die();
+        $edit_food_arr = array("food"=>array("food_name"=>$food_name,"food_description"=>$food_description,"category_id"=>$food_category,"sub_category_id"=>$editfoodSubCategory,"food_image"=>$edit_food_picture,"food_item_code"=>$food_item_code),"where"=>array("food_id"=>$food_id),"check"=>"food_name");
+        //echo json_encode($edit_food_arr); die();"food_price"=>$food_price,
         
         $edit_food_response = $this->General_model->general_function($edit_food_arr,$update_api_url);
 

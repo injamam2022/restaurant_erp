@@ -91,6 +91,9 @@ $order_time = explode(" ",$order_invoice_details[0]['order_date']);
       <p style="font-size: 14px; font-weight: 600; color: #000; margin: 0">
         GSTIN: 19AAFFP2583C1Z9
       </p>
+      <p style="font-size: 14px; font-weight: 600; color: #000; margin: 0">
+        FSSAI: 12818019005472
+      </p>
     </div>
 
 
@@ -104,10 +107,13 @@ $order_time = explode(" ",$order_invoice_details[0]['order_date']);
         <tr>
           <td>No .   <?=$order_invoice_details[0]['bill_invoice_number']?></td>
          
-          <td> <?=$order_invoice_details[0]['order_only_date']?></td>
+          <td> <?php if($order_invoice_details[0]['order_only_date']) { echo $order_invoice_details[0]['order_only_date']; } else {  $datetime = $order_invoice_details[0]['order_date'];
+                    list($date, $time) = explode(" ", $datetime);
+
+                    echo $date;  }  ?></td>
         </tr>
       </table>
-    </div>
+    </div>   
    
 
     <div class="table" style="width: 100%; padding-bottom: 0px">
@@ -265,7 +271,10 @@ for($m=0;$m<count($foodarray);$m++) {
     <tr>
       <td>No .   <?=$order_invoice_details[0]['bill_invoice_number']?></td>
      
-      <td><?=$order_invoice_details[0]['order_only_date']?></td>
+      <td><?php if($order_invoice_details[0]['order_only_date']) { echo $order_invoice_details[0]['order_only_date']; } else {  $datetime = $order_invoice_details[0]['order_date'];
+                    list($date, $time) = explode(" ", $datetime);
+
+                    echo $date;  }  ?></td>
     </tr>
   </table>
 </div>
@@ -440,7 +449,7 @@ for($m=0;$m<count($foodarray);$m++) {
 
           <tr>
             <td colspan="4" style="padding-top: 0px; text-align: left">
-              Thank you. Visit us again. ph.number: +91 8250438259
+              Thank you. Visit us again. ph.number: +91 98305500392
             </td>
           </tr>
           <tr>
