@@ -1,8 +1,10 @@
 
-<div class="collapse" id="drink">
-    <h3  style="margin-top:15px;">Drink Items</h3>
-    <div class="row">
-    <div class="col-md-12">
+<div class="collapse show order-section" id="drink">
+    <div class="section-loader"><div class="table-modal-spinner"></div></div>
+    <h3>Drink Items</h3>
+    <div class="row field-grid">
+    <div class="col-12">
+            <label for="food_id_drink">Add a drink</label>
             <select class="form-control select2all" id="food_id_drink" onchange="priceChange(this.value,2)">
                 <option value="">Select Drink</option>
                 <?php 
@@ -45,17 +47,20 @@
             <button  type="button" class="btn btn-primary" onclick="addItems(2)">+ Add</button>
     </div>
     </div>
-    <br>
-    <table class="table table-responsive" style="font-weight: bold;">
+    <div class="order-table-wrap">
+    <table class="table order-table">
         <thead>
+            <tr>
             <th>No.</th>
-            <th>Food Name</th>
+            <th>Drink Name</th>
             <th>Quantity</th>
             <th>Price</th>
             <th>Subtotal</th>
             <th>Action</th>
+            </tr>
         </thead>
         <tbody id="drink_content">
         </tbody>
     </table>
+    </div>
 </div>

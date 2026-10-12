@@ -864,6 +864,10 @@ class General_model extends CI_Model
     $food_gst = 0;
     $food_discount = 0;
     $drinks_discount = 0;
+    $food_total_with_gst = 0;
+    $drinks_total = 0;
+    $discount = 0;
+    $grand_total = 0;
     $order_sub_data = [];
 
     if ($order_data) {

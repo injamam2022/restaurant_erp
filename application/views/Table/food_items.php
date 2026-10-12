@@ -1,7 +1,9 @@
-<div class="collapse"id="food">
-    <h3 style="margin-top:15px;">Food Items</h3>
-    <div class="row">
-        <div class="col-md-12">
+<div class="collapse show order-section" id="food">
+    <div class="section-loader"><div class="table-modal-spinner"></div></div>
+    <h3>Food Items</h3>
+    <div class="row field-grid">
+        <div class="col-12">
+                <label for="food_id_food">Add a food item</label>
                 <select class="form-control select2all" id="food_id_food" onchange="priceChange(this.value,1)">
                     <option value="">Select Food</option>
                     <?php 
@@ -38,8 +40,10 @@
             <button type="button" class="btn btn-primary d-none" onclick="addItems(1)">+ Add</button>
         </div>
     </div>
-    <table class="table table-responsive" style="font-weight: bold;">
+    <div class="order-table-wrap">
+    <table class="table order-table">
         <thead>
+            <tr>
             <th>No.</th>
             <th>Food Name</th>
             <th>Quantity</th>
@@ -47,8 +51,10 @@
             <th>Subtotal</th>
             <th>Comments</th>
             <th>Action</th>
+            </tr>
         </thead>
         <tbody id="food_content">
         </tbody>
     </table>
+    </div>
 </div>

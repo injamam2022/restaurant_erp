@@ -1,6 +1,111 @@
 var base_url = $("#base_url").val();
 var GlobId="";
 var commentsArry = ['Less Spicy','Without Gravy','More Spicy','Normal','Deep Fry','Dry'];
+var tableRequestSeq = 0;
+var tableAjaxXhr = null;
+var isTableDataLoading = false;
+
+function showTableLoader()
+{
+    isTableDataLoading = true;
+    $("#loader-modal").addClass("is-visible");
+    $("#table-modal-content").addClass("is-loading");
+}
+
+function hideTableLoader()
+{
+    isTableDataLoading = false;
+    $("#loader-modal").removeClass("is-visible");
+    $("#table-modal-content").removeClass("is-loading");
+    $(".section-loader").removeClass("is-visible");
+}
+
+function resetSelect2Field(selector, value)
+{
+    var $el = $(selector);
+    if(!$el.length){
+        return;
+    }
+    $el.val(value);
+    if($el.data("select2")){
+        $el.trigger("change.select2");
+    }
+}
+
+function resetTableModal()
+{
+    finalSumTotal = 0;
+    $("#food_content").html('<tr class="is-empty"><td class="order-empty" colspan="7">No data found</td></tr>');
+    $("#drink_content").html('<tr class="is-empty"><td class="order-empty" colspan="6">No data found</td></tr>');
+    $("#quantity_food").val(1);
+    $("#quantity_drink").val(1);
+    $("#price_food").val("");
+    $("#price_drink").val("");
+    $("#sub_total_food").val("");
+    $("#sub_total_drink").val("");
+    $("#comments_food").val("");
+    $("#order_id").val("");
+    $("#table_id").val("");
+    $("#order_comments").val("");
+    setDiscountSelect("#discount_percentage", 0);
+    setDiscountSelect("#discount_percentage_drink", 0);
+    $("#splitPaymentAmount1").val(0);
+    $("#splitPaymentAmount2").val(0);
+    $(".splitPayment").addClass("d-none");
+    $("#food_total").html("0.00");
+    $("#food_total_with_gst").html("0.00");
+    $("#food_gst").html("0.00");
+    $("#drinks_sub_total").html("0.00");
+    $("#discount_food").html("0.00");
+    $("#discount_drink").html("0.00");
+    $("#drink_total").html("0.00");
+    $("#discount").html("0.00");
+    $("#grand_total").html("0.00");
+    $("#invoice_url").attr("href","javascript:void(0)").removeAttr("target").addClass("isDisabled");
+    $("#kitchen_url").attr("href","javascript:void(0)").removeAttr("target").addClass("isDisabled");
+    $("#paymentCollapse").addClass("isDisabled");
+    $("#payment_error").html("");
+    resetSelect2Field("#food_id_food", "");
+    resetSelect2Field("#food_id_drink", "");
+    resetSelect2Field("#size_id_drink", "");
+    resetSelect2Field("#payment_id", "0");
+    resetSelect2Field("#status_id", "");
+    resetSelect2Field("#splitPaymentId1", "0");
+    resetSelect2Field("#splitPaymentId2", "0");
+    $("#comments").removeClass("show");
+    $("button[data-target='#comments']").attr("aria-expanded", "false").addClass("collapsed");
+    showOrderItemSections();
+    $(".section-loader").removeClass("is-visible");
+}
+
+function showOrderItemSections()
+{
+    $("#food, #drink").addClass("show");
+    $("button[data-target='#food'], button[data-target='#drink']").attr("aria-expanded", "true").removeClass("collapsed");
+}
+
+function setDiscountSelect(selector, value)
+{
+    var pct = parseInt(value, 10);
+    if(isNaN(pct) || pct < 0){
+        pct = 0;
+    }
+    if(pct > 50){
+        pct = 50;
+    }
+    $(selector).val(String(pct));
+}
+
+function openTableModal(table_id, table_name)
+{
+    resetTableModal();
+    $("#table_id").val(table_id);
+    $(".modal-title").html(table_name);
+    $(".table-wrapper .table").removeClass("loading");
+    $("#table_row_"+table_id).addClass("loading");
+    ajaxTableFunction(table_id);
+    $("#table-modal").modal("show");
+}
 
 function clrmsg()
 {
@@ -102,7 +207,7 @@ function addItems(stat){
     var order_id = $("#order_id").val();
     var table_id = $("#table_id").val();
 
-    if(size_id =="" || food_id == ""){
+    if(size_id =="" || food_id == "" || order_id == ""){
         return;
     }
     $.ajax({
@@ -121,6 +226,9 @@ function addItems(stat){
             }
                 
         },
+        beforeSend: function() {
+            showTableLoader();
+        },
         success: function(response) {
             var res= JSON.parse(response);
             if(res.stat == 200){
@@ -134,6 +242,7 @@ function addItems(stat){
                     background: 'rgba(0, 0, 0, 0.96)'
                 });
             }else{
+                hideTableLoader();
                 swal({
                     title: 'Error',
                     text: 'Something went wrong',
@@ -143,11 +252,12 @@ function addItems(stat){
                     background: 'rgba(0, 0, 0, 0.96)'
                 });
             }
-            $("#food_id_"+name).val('');
-            $("#size_id_"+name).val('');
+            resetSelect2Field("#food_id_"+name, "");
+            resetSelect2Field("#size_id_"+name, "");
 
         },
         error: function(response) {
+            hideTableLoader();
             alert("error"+response);
         }
     })
@@ -168,14 +278,20 @@ function updateQuantity(quantity,order_details_id,food_unit_price){
             }
                 
         },
+        beforeSend: function() {
+            showTableLoader();
+        },
         success: function(response) {
             var res= JSON.parse(response);
             if(res.stat == 200){
                 ajaxTableFunction(table_id);
+            }else{
+                hideTableLoader();
             }
 
         },
         error: function(response) {
+            hideTableLoader();
             alert("error"+response);
         }
     })
@@ -198,6 +314,9 @@ function updateComments(food_comments,order_details_id){
             }
                 
         },
+        beforeSend: function() {
+            showTableLoader();
+        },
         success: function(response) {
             var res= JSON.parse(response);
             if(res.stat == 200){
@@ -210,10 +329,13 @@ function updateComments(food_comments,order_details_id){
                     background: 'rgba(0, 0, 0, 0.96)'
                 });
                 ajaxTableFunction(table_id);
+            }else{
+                hideTableLoader();
             }
 
         },
         error: function(response) {
+            hideTableLoader();
             alert("error"+response);
         }
     })
@@ -242,14 +364,20 @@ function deleteItem(order_details_id){
                     order_details_id
                 }
             },
+            beforeSend: function() {
+                showTableLoader();
+            },
             success: function(response) {
                 var res= JSON.parse(response);
                 if(res.stat == 200){
                     ajaxTableFunction(table_id);
+                }else{
+                    hideTableLoader();
                 }
     
             },
             error: function(response) {
+                hideTableLoader();
                 alert("error"+response);
             }
         })
@@ -260,7 +388,9 @@ function deleteItem(order_details_id){
 
 function contentData(data){
 
-    if(data.length === 0){
+    if(!data || !data.order_sub_data || data.order_sub_data.length === 0){
+        $("#food_content").html('<tr class="is-empty"><td class="order-empty" colspan="7">No data found</td></tr>');
+        $("#drink_content").html('<tr class="is-empty"><td class="order-empty" colspan="6">No data found</td></tr>');
         return;
     }
     
@@ -270,118 +400,116 @@ function contentData(data){
     var content2="";
 
     if(drinkData.length == 0){
-        content2 = `<p style="font-size:15px">No data found</p>`;
+        content2 = `<tr class="is-empty"><td class="order-empty" colspan="6">No data found</td></tr>`;
     }else{
         let drinkQty=0;
         for(var i=0;i<drinkData.length;i++){
         drinkQty+=parseInt(drinkData[i].quantity);
         content2 += 
         `<tr id="row_${drinkData[i].order_details_id}">
-        <td>${parseInt(i)+1}</td>
-        <td>${drinkData[i].food_information}</td>
-        <td>
-        <input class="form-control" type="number" min="1" max="100" style="width:75px;" placeholder="0" value="${drinkData[i].quantity}" 
+        <td data-label="No.">${parseInt(i)+1}</td>
+        <td data-label="Drink">${drinkData[i].food_information}</td>
+        <td data-label="Qty">
+        <input class="form-control order-qty" type="number" min="1" max="100" placeholder="0" value="${drinkData[i].quantity}" 
         onchange="updateQuantity(this.value,'${drinkData[i].order_details_id}',${drinkData[i].food_unit_price})"/></td>
-        <td>${drinkData[i].food_unit_price}</td>
-        <td>${drinkData[i].sub_total}</td>
-        <td> 
-            <button  type="button" class="btn btn-danger" onclick="deleteItem(${drinkData[i].order_details_id})"><i style="font-size:24px" class="fa">&#xf014;</i></button>
+        <td data-label="Price">${drinkData[i].food_unit_price}</td>
+        <td data-label="Subtotal">${drinkData[i].sub_total}</td>
+        <td data-label="Action"> 
+            <button type="button" class="btn btn-danger order-delete" onclick="deleteItem(${drinkData[i].order_details_id})"><i class="fa">&#xf014;</i></button>
         </td>
         </tr>`;
         }
         content2+=`
-         <tr>
-            <td></td>
-            <td>Sub total item</td>
-            <td>${drinkQty}</td>
-            <td></td>
-            <td>${data.drinks_total.toFixed(2)}</td>
-            <td></td>
-            <td></td>
+         <tr class="is-summary">
+            <td class="cell-skip"></td>
+            <td class="summary-label">Sub total item (${drinkQty})</td>
+            <td class="cell-skip">${drinkQty}</td>
+            <td class="cell-skip"></td>
+            <td class="summary-value">${Number(data.drinks_total || 0).toFixed(2)}</td>
+            <td class="cell-skip"></td>
         </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td>Total</td>
-            <td></td>
-            <td>${data.drinks_total.toFixed(2)}</td>
-            <td></td>
-            <td></td>
+        <tr class="is-summary">
+            <td class="cell-skip"></td>
+            <td class="cell-skip"></td>
+            <td class="summary-label">Total</td>
+            <td class="cell-skip"></td>
+            <td class="summary-value">${Number(data.drinks_total || 0).toFixed(2)}</td>
+            <td class="cell-skip"></td>
         </tr>`
     }
     if(foodData.length == 0){
-        content = `<p style="font-size:15px">No data found</p>`;
+        content = `<tr class="is-empty"><td class="order-empty" colspan="7">No data found</td></tr>`;
     }else{
     let foodQty=0;
     for(var i=0;i<foodData.length;i++){
         foodQty+=parseInt(foodData[i].quantity);
         content+=
         `<tr id="row_${foodData[i].order_details_id}">
-            <td>${parseInt(i)+1}</td>
-            <td>${foodData[i].food_information}</td>
-            <td>
-            <input class="form-control" type="number" min="1" max="100" style="width:75px;" placeholder="0" value="${foodData[i].quantity}"
+            <td data-label="No.">${parseInt(i)+1}</td>
+            <td data-label="Food">${foodData[i].food_information}</td>
+            <td data-label="Qty">
+            <input class="form-control order-qty" type="number" min="1" max="100" placeholder="0" value="${foodData[i].quantity}"
              onchange="updateQuantity(this.value,'${foodData[i].order_details_id}',${foodData[i].food_unit_price})"/></td>
-            <td>${foodData[i].food_unit_price}</td>
-            <td>${foodData[i].sub_total}</td>
-            <td> 
-            <select class="form-control" onchange="updateComments(this.value,'${foodData[i].order_details_id}')">
+            <td data-label="Price">${foodData[i].food_unit_price}</td>
+            <td data-label="Subtotal">${foodData[i].sub_total}</td>
+            <td data-label="Comments"> 
+            <select class="form-control order-comment" onchange="updateComments(this.value,'${foodData[i].order_details_id}')">
                 <option value="">Comments</option>
                 ${commentsArry.map((item)=> 
                     `<option ${item == foodData[i].food_comments ? 'selected':''} value="${item}">${item}</option>`)
                 }
             </select>
             </td>
-            <td> 
-                <button  type="button" class="btn btn-danger" onclick="deleteItem(${foodData[i].order_details_id})"><i style="font-size:24px" class="fa">&#xf014;</i></button>
+            <td data-label="Action"> 
+                <button type="button" class="btn btn-danger order-delete" onclick="deleteItem(${foodData[i].order_details_id})"><i class="fa">&#xf014;</i></button>
             </td>
         </tr>`;
     }
     content+=
-    ` <tr>
-        <td></td>
-        <td>Sub total item</td>
-        <td>${foodQty}</td>
-        <td></td>
-        <td>${data.food_total.toFixed(2)}</td>
-        <td></td>
-         <td></td>
+    ` <tr class="is-summary">
+        <td class="cell-skip"></td>
+        <td class="summary-label">Sub total item (${foodQty})</td>
+        <td class="cell-skip">${foodQty}</td>
+        <td class="cell-skip"></td>
+        <td class="summary-value">${Number(data.food_total || 0).toFixed(2)}</td>
+        <td class="cell-skip"></td>
+         <td class="cell-skip"></td>
     </tr>
-    <tr>
-        <td></td>
-        <td>@2.50% ON</td>
-        <td>CGST</td>
-        <td></td>
-        <td>${(data.food_gst/2).toFixed(2)}</td>
-        <td></td>
-        <td></td>
+    <tr class="is-summary">
+        <td class="cell-skip"></td>
+        <td class="summary-label">CGST @2.50%</td>
+        <td class="cell-skip">CGST</td>
+        <td class="cell-skip"></td>
+        <td class="summary-value">${(Number(data.food_gst || 0)/2).toFixed(2)}</td>
+        <td class="cell-skip"></td>
+        <td class="cell-skip"></td>
     </tr>
-    <tr>
-        <td></td>
-        <td>@2.50% ON</td>
-        <td>SGST</td>
-        <td></td>
-        <td>${(data.food_gst/2).toFixed(2)}</td>
-        <td></td>
-         <td></td>
+    <tr class="is-summary">
+        <td class="cell-skip"></td>
+        <td class="summary-label">SGST @2.50%</td>
+        <td class="cell-skip">SGST</td>
+        <td class="cell-skip"></td>
+        <td class="summary-value">${(Number(data.food_gst || 0)/2).toFixed(2)}</td>
+        <td class="cell-skip"></td>
+         <td class="cell-skip"></td>
     </tr>
-    <tr>
-        <td></td>
-        <td></td>
-        <td>Total Gst</td>
-        <td></td>
-        <td>${data.food_gst.toFixed(2)}</td>
-        <td></td>
-         <td></td>
+    <tr class="is-summary">
+        <td class="cell-skip"></td>
+        <td class="cell-skip"></td>
+        <td class="summary-label">Total Gst</td>
+        <td class="cell-skip"></td>
+        <td class="summary-value">${Number(data.food_gst || 0).toFixed(2)}</td>
+        <td class="cell-skip"></td>
+         <td class="cell-skip"></td>
     </tr>
-    <tr>
-        <td></td>
-        <td></td>
-        <td>Total</td>
-        <td></td>
-        <td>${data.food_total_with_gst.toFixed(2)}</td>
-        <td></td>
-         <td></td>
+    <tr class="is-summary">
+        <td class="cell-skip"></td>
+        <td class="cell-skip"></td>
+        <td class="summary-label">Total</td>
+        <td class="cell-skip"></td>
+        <td class="summary-value">${Number(data.food_total_with_gst || 0).toFixed(2)}</td>
+        <td class="cell-skip"></td>
+         <td class="cell-skip"></td>
     </tr>`;
     }
     $("#food_content").html(content);
@@ -513,18 +641,30 @@ function finalSubmitOrder(){
 }
 var finalSumTotal=0;
 function ajaxTableFunction(table_id){
-    $.ajax({
+    var requestId = ++tableRequestSeq;
+    if(tableAjaxXhr && tableAjaxXhr.readyState !== 4){
+        tableAjaxXhr.abort();
+    }
+    showTableLoader();
+    tableAjaxXhr = $.ajax({
         type: "POST",
         url: base_url+"TableManagement/table_get",
         data: {table_id},
         success: function(response) {
+            if(requestId !== tableRequestSeq){
+                return;
+            }
             var res = JSON.parse(response);
-            finalSumTotal = res.grand_total.toFixed(2);
-            $("#food_total").html(res.food_total.toFixed(2));
-            $("#food_total_with_gst").html(res.food_total_with_gst.toFixed(2));
-            $("#food_gst").html(res.food_gst.toFixed(2));
-            $("#drink_total").html(res.drinks_total.toFixed(2));
-            $("#drinks_sub_total").html(res.drinks_sub_total.toFixed(2));
+            if(!res || !res.order_data || !res.order_data[0]){
+                contentData({order_sub_data: []});
+                return;
+            }
+            finalSumTotal = Number(res.grand_total || 0).toFixed(2);
+            $("#food_total").html(Number(res.food_total || 0).toFixed(2));
+            $("#food_total_with_gst").html(Number(res.food_total_with_gst || 0).toFixed(2));
+            $("#food_gst").html(Number(res.food_gst || 0).toFixed(2));
+            $("#drink_total").html(Number(res.drinks_total || 0).toFixed(2));
+            $("#drinks_sub_total").html(Number(res.drinks_sub_total || 0).toFixed(2));
             $("#order_comments").val(res.order_data[0]['order_comments']);
             if(res.order_data[0]['discount'] == 0){
                 $("#discount").html(res.order_data[0]['discount']);
@@ -546,31 +686,31 @@ function ajaxTableFunction(table_id){
             
             if(res.order_data[0]['payment_id'] == 7){
                 $(".splitPayment").removeClass('d-none');
-                $("#splitPaymentId1").val(res.order_collection_data[0].payment_id);
-                $("#splitPaymentId2").val(res.order_collection_data[1].payment_id);
+                resetSelect2Field("#splitPaymentId1", res.order_collection_data[0].payment_id);
+                resetSelect2Field("#splitPaymentId2", res.order_collection_data[1].payment_id);
                 $("#splitPaymentAmount1").val(res.order_collection_data[0].collection_amount);
                 $("#splitPaymentAmount2").val(res.order_collection_data[1].collection_amount);
             }else{
                 $(".splitPayment").addClass('d-none');
-                $("#splitPaymentId1").val('');
-                $("#splitPaymentId2").val('');
+                resetSelect2Field("#splitPaymentId1", "0");
+                resetSelect2Field("#splitPaymentId2", "0");
                 $("#splitPaymentAmount1").val(0);
                 $("#splitPaymentAmount2").val(0);
             }
             
-            $("#grand_total").html(res.grand_total.toFixed(2));
+            $("#grand_total").html(Number(res.grand_total || 0).toFixed(2));
             $("#order_comments").html(res.order_comments);
-            $("#payment_id").val(res?.order_data[0]['payment_id']);
-            $("#status_id").val(res?.order_data[0]['status_id']);
-            $("#order_id").val(res?.order_data[0]['order_id']);
-            $("#table_id").val(res?.order_data[0]['table_id']);
-            $("#discount_percentage").val(res?.order_data[0]['discount_percentage']);
-            $("#discount_percentage_drink").val(res?.order_data[0]['discount_percentage_drink']);
-            if(res.order_sub_data.length > 0){
-                $("#invoice_url").attr('href',base_url +"OrderMangement/viewinvoice/" +idToShortURL(res?.order_data[0]['order_id']));
+            resetSelect2Field("#payment_id", res.order_data[0]['payment_id']);
+            resetSelect2Field("#status_id", res.order_data[0]['status_id']);
+            $("#order_id").val(res.order_data[0]['order_id']);
+            $("#table_id").val(res.order_data[0]['table_id']);
+            setDiscountSelect("#discount_percentage", res.order_data[0]['discount_percentage']);
+            setDiscountSelect("#discount_percentage_drink", res.order_data[0]['discount_percentage_drink']);
+            if(res.order_sub_data && res.order_sub_data.length > 0){
+                $("#invoice_url").attr('href',base_url +"OrderMangement/viewinvoice/" +idToShortURL(res.order_data[0]['order_id']));
                 $("#invoice_url").attr('target','_blank').removeClass('isDisabled');
 
-                $("#kitchen_url").attr('href',base_url +"OrderMangement/viewKitcheninvoice/" +idToShortURL(res?.order_data[0]['order_id']));
+                $("#kitchen_url").attr('href',base_url +"OrderMangement/viewKitcheninvoice/" +idToShortURL(res.order_data[0]['order_id']));
                 $("#kitchen_url").attr('target','_blank').removeClass('isDisabled');
 
                 $("#paymentCollapse").removeClass('isDisabled');
@@ -589,21 +729,26 @@ function ajaxTableFunction(table_id){
             contentData(res)
 
         },
-        error: function(response) {
+        error: function(response, status) {
+            if(status === "abort" || requestId !== tableRequestSeq){
+                return;
+            }
             alert("error"+response);
+        },
+        complete: function(xhr, status) {
+            if(status === "abort" || requestId !== tableRequestSeq){
+                return;
+            }
+            hideTableLoader();
+            $("#table_row_"+table_id).removeClass("loading");
+            showOrderItemSections();
         }
     })
 }
 
 function tableClick(table_id,table_name,table_status){
-    contentData([]);
     if(table_status == "deactive"){
-        $(".modal-title").html(table_name);
-        ajaxTableFunction(table_id);
-        $("#table-modal").modal('show');
-        $("#food_id_food").val('');
-        $("#food_id_drink").val('');
-        $("#size_id_drink").val('');
+        openTableModal(table_id, table_name);
     }else{
         swal({
             title: 'Are you sure?',
@@ -616,15 +761,9 @@ function tableClick(table_id,table_name,table_status){
             cancelButtonClass: 'btn btn-light',
             background: 'rgba(0, 0, 0, 0.96)'
         }).then(function(){
-            $(".modal-title").html(table_name);
             $("#table_row_"+table_id).removeClass('active');
             $("#table_row_"+table_id).addClass("deactive");
-            $("#food_id_food").val('');
-            $("#food_id_drink").val('');
-            $("#size_id_drink").val('');
-            ajaxTableFunction(table_id);
-            $("#table-modal").modal('show');
-            
+            openTableModal(table_id, table_name);
         } );     
     }
     
@@ -759,15 +898,18 @@ function changeDiscount(discount_percentage){
             order_only_date
         },
         beforeSend: function() {
-            
+            showTableLoader();
          },
         success: function(response) {
             var res = JSON.parse(response);
            if(res.stat ==200){
                 ajaxTableFunction(table_id);
+           }else{
+                hideTableLoader();
            }
         },
         error: function(response) {
+            hideTableLoader();
             alert("error"+response);
             $("#finalSubmit").attr('enabled','enabled').html('Submit');
         }
@@ -829,3 +971,33 @@ function paymentType(payment_id,){
         $(".splitPayment").addClass('d-none');
     }
 }
+
+$(document).ready(function() {
+    $("#table-modal").on("hidden.bs.modal", function() {
+        if(tableAjaxXhr && tableAjaxXhr.readyState !== 4){
+            tableAjaxXhr.abort();
+        }
+        tableRequestSeq++;
+        hideTableLoader();
+        resetTableModal();
+        $("#comments").collapse("hide");
+        $(".section-loader").removeClass("is-visible");
+        $(".table-wrapper .table").removeClass("loading");
+    });
+
+    $("#table-modal").on("click", "button[data-toggle='collapse']", function() {
+        var target = $(this).attr("data-target");
+        var $panel = $(target);
+        if($panel.hasClass("show")){
+            return;
+        }
+        $panel.find(".section-loader").first().addClass("is-visible");
+        if(isTableDataLoading){
+            showTableLoader();
+            return;
+        }
+        setTimeout(function() {
+            $panel.find(".section-loader").first().removeClass("is-visible");
+        }, 350);
+    });
+});
