@@ -73,6 +73,7 @@ function resetTableModal()
     resetSelect2Field("#status_id", "");
     resetSelect2Field("#splitPaymentId1", "0");
     resetSelect2Field("#splitPaymentId2", "0");
+    setTakeAwayMode(false);
     showOrderItemSections();
     $(".section-loader").removeClass("is-visible");
 }
@@ -92,8 +93,24 @@ function refreshOrderTabSelect2($panel)
     });
 }
 
+function isTakeAwayTable(table_name)
+{
+    return String(table_name || "").replace(/\s+/g, " ").trim().toLowerCase() === "take away";
+}
+
+function setTakeAwayMode(enabled)
+{
+    $("#table-modal").toggleClass("is-takeaway", !!enabled);
+    if(enabled && $("#drink").hasClass("active")){
+        activateOrderTab("food");
+    }
+}
+
 function activateOrderTab(tabId)
 {
+    if(tabId === "drink" && $("#table-modal").hasClass("is-takeaway")){
+        tabId = "food";
+    }
     var $link = $('#table-modal a[href="#' + tabId + '"]');
     if($link.length && $.fn.tab){
         $link.tab("show");
@@ -127,6 +144,7 @@ function openTableModal(table_id, table_name)
     resetTableModal();
     $("#table_id").val(table_id);
     $(".modal-title").html(table_name);
+    setTakeAwayMode(isTakeAwayTable(table_name));
     $(".table-wrapper .table").removeClass("loading");
     $("#table_row_"+table_id).addClass("loading");
     ajaxTableFunction(table_id);
@@ -151,6 +169,9 @@ function changeType(value){
 }
 
 function priceChange(value,stat){
+    if(stat == 2 && $("#table-modal").hasClass("is-takeaway")){
+        return;
+    }
     
     if(stat == 1){
         var name="food";

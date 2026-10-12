@@ -42,7 +42,7 @@
                     <li class="nav-item">
                         <a class="nav-link active" id="food-tab" data-toggle="tab" href="#food" role="tab" aria-controls="food" aria-selected="true">Food</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item drink-only">
                         <a class="nav-link" id="drink-tab" data-toggle="tab" href="#drink" role="tab" aria-controls="drink" aria-selected="false">Drinks</a>
                     </li>
                     <li class="nav-item">
@@ -96,7 +96,7 @@
                                 <input type="text" class="form-control date-picker" id="order_only_date" placeholder="eg: 2019-10-25" value="<?php echo date('Y-m-d');?>">
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="col-12 col-sm-6 col-lg-3 drink-only">
                             <label>Drink Discount (%)</label>
                             <select class="form-control" onchange="changeDiscount(this.value)" id="discount_percentage_drink">
                                 <?php for($d=0;$d<=50;$d++){ ?>
@@ -164,9 +164,9 @@
                                 <div class="bill-line"><span>Food Discount</span><strong id="discount_food">0.00</strong></div>
                                 <div class="bill-line"><span>Food GST</span><strong id="food_gst">0.00</strong></div>
                                 <div class="bill-line"><span>Food Total</span><strong id="food_total_with_gst">0.00</strong></div>
-                                <div class="bill-line"><span>Drink Sub Total</span><strong id="drinks_sub_total">0.00</strong></div>
-                                <div class="bill-line"><span>Drink Discount</span><strong id="discount_drink">0.00</strong></div>
-                                <div class="bill-line"><span>Drinks Total</span><strong id="drink_total">0.00</strong></div>
+                                <div class="bill-line drink-only"><span>Drink Sub Total</span><strong id="drinks_sub_total">0.00</strong></div>
+                                <div class="bill-line drink-only"><span>Drink Discount</span><strong id="discount_drink">0.00</strong></div>
+                                <div class="bill-line drink-only"><span>Drinks Total</span><strong id="drink_total">0.00</strong></div>
                                 <div class="bill-line"><span>Total Discount</span><strong id="discount">0.00</strong></div>
                                 <div class="bill-line bill-line--grand"><span>Grand Total</span><strong id="grand_total">0.00</strong></div>
                             </div>

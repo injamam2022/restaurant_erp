@@ -278,6 +278,9 @@
                 color: #fff;
                 background: #2196F3;
             }
+            #table-modal.is-takeaway .drink-only {
+                display: none !important;
+            }
             #table-modal .order-tab-content {
                 min-height: 280px;
             }
