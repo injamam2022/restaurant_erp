@@ -310,7 +310,30 @@ function addItems(stat){
     })
 }
 
+function quantitySelectHtml(quantity, order_details_id, food_unit_price)
+{
+    var qty = parseInt(quantity, 10);
+    if(isNaN(qty) || qty < 1){
+        qty = 1;
+    }
+    if(qty > 50){
+        qty = 50;
+    }
+    var options = "";
+    for(var n = 1; n <= 50; n++){
+        options += `<option value="${n}"${n === qty ? " selected" : ""}>${n}</option>`;
+    }
+    return `<select class="form-control order-qty" onchange="updateQuantity(this.value,'${order_details_id}',${food_unit_price})">${options}</select>`;
+}
+
 function updateQuantity(quantity,order_details_id,food_unit_price){
+    quantity = parseInt(quantity, 10);
+    if(isNaN(quantity) || quantity < 1){
+        quantity = 1;
+    }
+    if(quantity > 50){
+        quantity = 50;
+    }
     var table_id = $("#table_id").val();
     $.ajax({
         type: "POST",
@@ -457,8 +480,7 @@ function contentData(data){
         <td data-label="No.">${parseInt(i)+1}</td>
         <td data-label="Drink">${drinkData[i].food_information}</td>
         <td data-label="Qty">
-        <input class="form-control order-qty" type="number" min="1" max="100" placeholder="0" value="${drinkData[i].quantity}" 
-        onchange="updateQuantity(this.value,'${drinkData[i].order_details_id}',${drinkData[i].food_unit_price})"/></td>
+        ${quantitySelectHtml(drinkData[i].quantity, drinkData[i].order_details_id, drinkData[i].food_unit_price)}</td>
         <td data-label="Price">${drinkData[i].food_unit_price}</td>
         <td data-label="Subtotal">${drinkData[i].sub_total}</td>
         <td data-label="Action"> 
@@ -495,8 +517,7 @@ function contentData(data){
             <td data-label="No.">${parseInt(i)+1}</td>
             <td data-label="Food">${foodData[i].food_information}</td>
             <td data-label="Qty">
-            <input class="form-control order-qty" type="number" min="1" max="100" placeholder="0" value="${foodData[i].quantity}"
-             onchange="updateQuantity(this.value,'${foodData[i].order_details_id}',${foodData[i].food_unit_price})"/></td>
+            ${quantitySelectHtml(foodData[i].quantity, foodData[i].order_details_id, foodData[i].food_unit_price)}</td>
             <td data-label="Price">${foodData[i].food_unit_price}</td>
             <td data-label="Subtotal">${foodData[i].sub_total}</td>
             <td data-label="Comments"> 

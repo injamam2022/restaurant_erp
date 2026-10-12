@@ -385,10 +385,13 @@
                 color: #fff;
             }
             #table-modal .order-qty {
-                width: 76px;
-                min-width: 68px;
+                width: 88px;
+                min-width: 80px;
                 min-height: 36px;
-                padding: 4px 8px;
+                padding: 4px 28px 4px 8px;
+                cursor: pointer;
+                appearance: auto;
+                -webkit-appearance: menulist;
             }
             #table-modal .order-comment {
                 min-width: 140px;
