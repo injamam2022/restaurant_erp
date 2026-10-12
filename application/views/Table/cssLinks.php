@@ -206,11 +206,35 @@
                 padding: 16px 20px 24px;
                 -webkit-overflow-scrolling: touch;
             }
+            #table-modal .order-toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                margin-bottom: 12px;
+            }
+            #table-modal .order-grand-chip {
+                display: inline-flex;
+                align-items: baseline;
+                gap: 8px;
+                padding: 8px 14px;
+                border-radius: 10px;
+                background: rgba(33, 150, 243, 0.18);
+                color: rgba(255,255,255,0.75);
+                font-weight: 600;
+                font-size: 13px;
+            }
+            #table-modal .order-grand-chip strong {
+                color: #fff;
+                font-size: 18px;
+                font-variant-numeric: tabular-nums;
+            }
             #table-modal .order-actions {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
-                margin-bottom: 4px;
+                margin-bottom: 0;
             }
             #table-modal .order-actions .btn {
                 margin: 0;
@@ -218,15 +242,51 @@
                 font-weight: 600;
                 padding: 8px 14px;
             }
-            #table-modal .order-actions .btn[aria-expanded="true"] {
-                box-shadow: inset 0 -3px 0 #ffc107;
+            #table-modal .order-tabs {
+                display: flex;
+                width: 100%;
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 10px;
+                overflow: hidden;
+                margin-bottom: 12px;
+                background: rgba(255,255,255,0.03);
+            }
+            #table-modal .order-tabs .nav-item {
+                flex: 1 1 0;
+                margin: 0;
+            }
+            #table-modal .order-tabs .nav-link {
+                display: block;
+                width: 100%;
+                text-align: center;
+                border: 0;
+                border-radius: 0;
+                margin: 0;
+                padding: 10px 8px;
+                color: rgba(255,255,255,0.7);
+                font-weight: 700;
+                background: transparent;
+            }
+            #table-modal .order-tabs .nav-link:before {
+                display: none;
+            }
+            #table-modal .order-tabs .nav-link:hover {
+                color: #fff;
+                background: rgba(255,255,255,0.06);
+            }
+            #table-modal .order-tabs .nav-link.active {
+                color: #fff;
+                background: #2196F3;
+            }
+            #table-modal .order-tab-content {
+                min-height: 280px;
             }
             #table-modal .order-section {
                 background: rgba(255,255,255,0.04);
                 border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 12px;
                 padding: 14px 14px 8px;
-                margin-top: 12px;
+                margin-top: 0;
             }
             #table-modal .order-section > h3 {
                 margin: 0 0 12px;
@@ -423,8 +483,19 @@
                 #table-modal .modal-title {
                     font-size: 1.1rem;
                 }
+                #table-modal .order-toolbar {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+                #table-modal .order-grand-chip {
+                    justify-content: space-between;
+                }
                 #table-modal .order-actions .btn {
                     flex: 1 1 calc(50% - 8px);
+                }
+                #table-modal .order-tabs .nav-link {
+                    padding: 10px 4px;
+                    font-size: 13px;
                 }
                 #table-modal .order-table-wrap {
                     overflow: visible;

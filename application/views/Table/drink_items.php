@@ -1,5 +1,5 @@
 
-<div class="collapse show order-section" id="drink">
+<div class="tab-pane fade order-section" id="drink" role="tabpanel" aria-labelledby="drink-tab">
     <div class="section-loader"><div class="table-modal-spinner"></div></div>
     <h3>Drink Items</h3>
     <div class="row field-grid">

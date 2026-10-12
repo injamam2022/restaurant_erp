@@ -30,19 +30,31 @@
         </div>
         <div class="modal-body table-modal-body">
             <div id="table-modal-content" class="table-modal-content">
-                <div class="order-actions">
-                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#food" aria-expanded="true" aria-controls="food">Food Item</button>
-                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#drink" aria-expanded="true" aria-controls="drink">Drink Item</button>
-                <button type="button" id="paymentCollapse" class="btn btn-primary" data-toggle="collapse" data-target="#comments" aria-expanded="false" aria-controls="comments">Payment</button>
-                <a id="invoice_url" href="javascript:void(0)" class="btn btn-primary isDisabled">Bill Invoice</a>
-                <a id="kitchen_url" href="javascript:void(0)" class="btn btn-primary isDisabled">Kitchen Receipt</a>
-                <button type="button" onclick="cancelTable()" class="btn btn-danger">Cancel order</button>
+                <div class="order-toolbar">
+                    <div class="order-grand-chip">Total <strong id="header_grand_total">0.00</strong></div>
+                    <div class="order-actions">
+                        <a id="invoice_url" href="javascript:void(0)" class="btn btn-primary isDisabled">Bill Invoice</a>
+                        <a id="kitchen_url" href="javascript:void(0)" class="btn btn-primary isDisabled">Kitchen Receipt</a>
+                        <button type="button" onclick="cancelTable()" class="btn btn-danger">Cancel order</button>
+                    </div>
                 </div>
+                <ul class="nav nav-tabs order-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="food-tab" data-toggle="tab" href="#food" role="tab" aria-controls="food" aria-selected="true">Food</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="drink-tab" data-toggle="tab" href="#drink" role="tab" aria-controls="drink" aria-selected="false">Drinks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link isDisabled" id="paymentCollapse" data-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Payment</a>
+                    </li>
+                </ul>
+                <div class="tab-content order-tab-content">
             <?php 
                     $this->load->view('Table/food_items',$data['foodData']);
                     $this->load->view('Table/drink_items',$data['foodData']);
             ?>
-            <div class="collapse order-section" id="comments">
+            <div class="tab-pane fade order-section" id="comments" role="tabpanel" aria-labelledby="paymentCollapse">
                 <div class="section-loader"><div class="table-modal-spinner"></div></div>
                 <h3>Payment</h3>
                 <div class="card card-body payment-card">
@@ -172,6 +184,7 @@
                 </div>
             </div>
             </div>
+                </div>
             <div id="loader-modal" class="table-modal-loader">
                 <div class="table-modal-spinner"></div>
                 <p>Loading...</p>

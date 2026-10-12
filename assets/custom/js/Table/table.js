@@ -61,6 +61,7 @@ function resetTableModal()
     $("#drink_total").html("0.00");
     $("#discount").html("0.00");
     $("#grand_total").html("0.00");
+    $("#header_grand_total").html("0.00");
     $("#invoice_url").attr("href","javascript:void(0)").removeAttr("target").addClass("isDisabled");
     $("#kitchen_url").attr("href","javascript:void(0)").removeAttr("target").addClass("isDisabled");
     $("#paymentCollapse").addClass("isDisabled");
@@ -72,16 +73,41 @@ function resetTableModal()
     resetSelect2Field("#status_id", "");
     resetSelect2Field("#splitPaymentId1", "0");
     resetSelect2Field("#splitPaymentId2", "0");
-    $("#comments").removeClass("show");
-    $("button[data-target='#comments']").attr("aria-expanded", "false").addClass("collapsed");
     showOrderItemSections();
     $(".section-loader").removeClass("is-visible");
 }
 
+function refreshOrderTabSelect2($panel)
+{
+    var $scope = $panel && $panel.length ? $panel : $("#table-modal");
+    $scope.find(".select2all").each(function() {
+        var $el = $(this);
+        if($el.data("select2")){
+            $el.select2("destroy");
+        }
+        $el.select2({
+            dropdownParent: $el.parent(),
+            width: "100%"
+        });
+    });
+}
+
+function activateOrderTab(tabId)
+{
+    var $link = $('#table-modal a[href="#' + tabId + '"]');
+    if($link.length && $.fn.tab){
+        $link.tab("show");
+        return;
+    }
+    $("#food, #drink, #comments").removeClass("show active");
+    $("#" + tabId).addClass("show active");
+    $("#table-modal .order-tabs .nav-link").removeClass("active").attr("aria-selected", "false");
+    $link.addClass("active").attr("aria-selected", "true");
+}
+
 function showOrderItemSections()
 {
-    $("#food, #drink").addClass("show");
-    $("button[data-target='#food'], button[data-target='#drink']").attr("aria-expanded", "true").removeClass("collapsed");
+    activateOrderTab("food");
 }
 
 function setDiscountSelect(selector, value)
@@ -699,6 +725,7 @@ function ajaxTableFunction(table_id){
             }
             
             $("#grand_total").html(Number(res.grand_total || 0).toFixed(2));
+            $("#header_grand_total").html(Number(res.grand_total || 0).toFixed(2));
             $("#order_comments").html(res.order_comments);
             resetSelect2Field("#payment_id", res.order_data[0]['payment_id']);
             resetSelect2Field("#status_id", res.order_data[0]['status_id']);
@@ -741,7 +768,7 @@ function ajaxTableFunction(table_id){
             }
             hideTableLoader();
             $("#table_row_"+table_id).removeClass("loading");
-            showOrderItemSections();
+            refreshOrderTabSelect2($("#table-modal .tab-pane.active"));
         }
     })
 }
@@ -973,6 +1000,10 @@ function paymentType(payment_id,){
 }
 
 $(document).ready(function() {
+    $("#table-modal").on("shown.bs.modal", function() {
+        refreshOrderTabSelect2($("#table-modal .tab-pane.active"));
+    });
+
     $("#table-modal").on("hidden.bs.modal", function() {
         if(tableAjaxXhr && tableAjaxXhr.readyState !== 4){
             tableAjaxXhr.abort();
@@ -980,17 +1011,14 @@ $(document).ready(function() {
         tableRequestSeq++;
         hideTableLoader();
         resetTableModal();
-        $("#comments").collapse("hide");
         $(".section-loader").removeClass("is-visible");
         $(".table-wrapper .table").removeClass("loading");
     });
 
-    $("#table-modal").on("click", "button[data-toggle='collapse']", function() {
-        var target = $(this).attr("data-target");
+    $("#table-modal").on("shown.bs.tab", "a[data-toggle='tab']", function(e) {
+        var target = $(e.target).attr("href");
         var $panel = $(target);
-        if($panel.hasClass("show")){
-            return;
-        }
+        refreshOrderTabSelect2($panel);
         $panel.find(".section-loader").first().addClass("is-visible");
         if(isTableDataLoading){
             showTableLoader();
@@ -998,6 +1026,6 @@ $(document).ready(function() {
         }
         setTimeout(function() {
             $panel.find(".section-loader").first().removeClass("is-visible");
-        }, 350);
+        }, 200);
     });
 });

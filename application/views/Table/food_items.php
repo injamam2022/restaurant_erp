@@ -1,4 +1,4 @@
-<div class="collapse show order-section" id="food">
+<div class="tab-pane fade show active order-section" id="food" role="tabpanel" aria-labelledby="food-tab">
     <div class="section-loader"><div class="table-modal-spinner"></div></div>
     <h3>Food Items</h3>
     <div class="row field-grid">
