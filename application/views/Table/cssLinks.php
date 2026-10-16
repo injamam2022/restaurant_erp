@@ -385,13 +385,19 @@
                 color: #fff;
             }
             #table-modal .order-qty {
-                width: 88px;
-                min-width: 80px;
+                width: 72px;
+                min-width: 64px;
+                height: 36px;
                 min-height: 36px;
-                padding: 4px 28px 4px 8px;
-                cursor: pointer;
-                appearance: auto;
-                -webkit-appearance: menulist;
+                padding: 4px 8px;
+                text-align: center;
+                appearance: none;
+                -webkit-appearance: none;
+                background-image: none;
+                cursor: text;
+            }
+            #table-modal .order-qty:invalid {
+                border-color: #ff5252 !important;
             }
             #table-modal .order-comment {
                 min-width: 140px;
@@ -462,6 +468,19 @@
             }
             body > .select2-container {
                 z-index: 2000;
+            }
+            #table-modal .select2-container {
+                z-index: 2;
+            }
+            #table-modal .select2-container--open,
+            #table-modal .select2-dropdown {
+                z-index: 10050;
+            }
+            #table-modal .field-grid > [class*="col-"] {
+                position: relative;
+            }
+            #table-modal .field-grid > [class*="col-"]:focus-within {
+                z-index: 30;
             }
 
             @media (max-width: 767px) {

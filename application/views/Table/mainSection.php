@@ -99,7 +99,7 @@
                         <div class="col-12 col-sm-6 col-lg-3 drink-only">
                             <label>Drink Discount (%)</label>
                             <select class="form-control" onchange="changeDiscount(this.value)" id="discount_percentage_drink">
-                                <?php for($d=0;$d<=50;$d++){ ?>
+                                <?php for($d=0;$d<=100;$d++){ ?>
                                 <option value="<?php echo $d;?>" <?php echo $d==0?'selected':'';?>><?php echo $d;?>%</option>
                                 <?php } ?>
                             </select>
@@ -107,7 +107,7 @@
                         <div class="col-12 col-sm-6 col-lg-3">
                             <label>Food Discount (%)</label>
                             <select class="form-control" onchange="changeDiscount(this.value)" id="discount_percentage">
-                                <?php for($d=0;$d<=50;$d++){ ?>
+                                <?php for($d=0;$d<=100;$d++){ ?>
                                 <option value="<?php echo $d;?>" <?php echo $d==0?'selected':'';?>><?php echo $d;?>%</option>
                                 <?php } ?>
                             </select>

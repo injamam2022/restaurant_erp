@@ -52,11 +52,12 @@
 
         <!-- App functions and actions -->
         <script src="<?php echo base_url();?>assets/js/app.min.js"></script>
-        <script src="<?php echo base_url();?>assets/custom/js/Table/table.js"></script>
+        <script src="<?php echo base_url();?>assets/custom/js/Table/table.js?v=<?php echo filemtime(FCPATH.'assets/custom/js/Table/table.js'); ?>"></script>
         <script>
         $('.select2all').each(function () {
             $(this).select2({
                 dropdownParent: $(this).parent(),
+                width: "100%"
             });
         });
         $(document).ready(function() {

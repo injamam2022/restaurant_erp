@@ -133,8 +133,8 @@ function setDiscountSelect(selector, value)
     if(isNaN(pct) || pct < 0){
         pct = 0;
     }
-    if(pct > 50){
-        pct = 50;
+    if(pct > 100){
+        pct = 100;
     }
     $(selector).val(String(pct));
 }
@@ -310,29 +310,31 @@ function addItems(stat){
     })
 }
 
-function quantitySelectHtml(quantity, order_details_id, food_unit_price)
+function quantityInputHtml(quantity, order_details_id, food_unit_price)
 {
     var qty = parseInt(quantity, 10);
     if(isNaN(qty) || qty < 1){
         qty = 1;
     }
-    if(qty > 50){
-        qty = 50;
-    }
-    var options = "";
-    for(var n = 1; n <= 50; n++){
-        options += `<option value="${n}"${n === qty ? " selected" : ""}>${n}</option>`;
-    }
-    return `<select class="form-control order-qty" onchange="updateQuantity(this.value,'${order_details_id}',${food_unit_price})">${options}</select>`;
+    return `<input type="text" class="form-control order-qty" inputmode="numeric" autocomplete="off" maxlength="2" required value="${qty}" oninput="this.setCustomValidity('')" onchange="updateQuantity(this,'${order_details_id}',${food_unit_price})">`;
 }
 
-function updateQuantity(quantity,order_details_id,food_unit_price){
-    quantity = parseInt(quantity, 10);
-    if(isNaN(quantity) || quantity < 1){
-        quantity = 1;
+function updateQuantity(input,order_details_id,food_unit_price){
+    var raw = String(input.value).trim();
+    var quantity = parseInt(raw, 10);
+    input.setCustomValidity("");
+    if(raw === ""){
+        input.setCustomValidity("Enter a quantity");
+    }else if(input.validity.badInput || !/^\d+$/.test(raw)){
+        input.setCustomValidity("Enter a whole number");
+    }else if(quantity < 1){
+        input.setCustomValidity("Quantity must be at least 1");
+    }else if(quantity > 50){
+        input.setCustomValidity("Quantity cannot be more than 50");
     }
-    if(quantity > 50){
-        quantity = 50;
+    if(!input.checkValidity()){
+        input.reportValidity();
+        return;
     }
     var table_id = $("#table_id").val();
     $.ajax({
@@ -480,7 +482,7 @@ function contentData(data){
         <td data-label="No.">${parseInt(i)+1}</td>
         <td data-label="Drink">${drinkData[i].food_information}</td>
         <td data-label="Qty">
-        ${quantitySelectHtml(drinkData[i].quantity, drinkData[i].order_details_id, drinkData[i].food_unit_price)}</td>
+        ${quantityInputHtml(drinkData[i].quantity, drinkData[i].order_details_id, drinkData[i].food_unit_price)}</td>
         <td data-label="Price">${drinkData[i].food_unit_price}</td>
         <td data-label="Subtotal">${drinkData[i].sub_total}</td>
         <td data-label="Action"> 
@@ -517,7 +519,7 @@ function contentData(data){
             <td data-label="No.">${parseInt(i)+1}</td>
             <td data-label="Food">${foodData[i].food_information}</td>
             <td data-label="Qty">
-            ${quantitySelectHtml(foodData[i].quantity, foodData[i].order_details_id, foodData[i].food_unit_price)}</td>
+            ${quantityInputHtml(foodData[i].quantity, foodData[i].order_details_id, foodData[i].food_unit_price)}</td>
             <td data-label="Price">${foodData[i].food_unit_price}</td>
             <td data-label="Subtotal">${foodData[i].sub_total}</td>
             <td data-label="Comments"> 
